@@ -1,9 +1,9 @@
 
 source "amazon-ebs" "myfirstimage" {
-  region     = "ap-south-1"
-  source_ami = "ami-07ffb2f4d65357b42"
+  region        = "ap-south-1"
+  source_ami    = "ami-07ffb2f4d65357b42"
   instance_type = "t2.micro"
-  ami_name   = "packer-ubuntu_{{timestamp}}"
+  ami_name      = "packer-ubuntu_{{timestamp}}"
   source_ami_filter {
     filters = {
       name                = "ubuntu/images/*/ubuntu-jammy-22.04-amd64-server-*"
@@ -21,4 +21,10 @@ source "amazon-ebs" "myfirstimage" {
 build {
   name    = "ubuntu-packer"
   sources = ["source.amazon-ebs.myfirstimage."]
+  provisioner "shell" {
+    inline = ["sudo apt update -y", "sudo apt install nginx -y", "sudo systemctl start nginx"]
+  }
+  post-processor "manifest" {
+    output = "my-ami.json"
+  }
 }
